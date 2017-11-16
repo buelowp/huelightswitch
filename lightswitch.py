@@ -5,6 +5,7 @@
 #
 # file : button_test4.py
 
+import sys
 import logging
 logging.basicConfig()
 
@@ -24,8 +25,8 @@ GPIO.setup(Button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(Dimmer, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(Brighter, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-LightState = lightnames["Pete"].on
-Brightness = lightnames["Pete"].brightness
+LightState = lightnames[sys.argv[1]].on
+Brightness = lightnames[sys.argv[1]].brightness
 
 
 def onswitch_callback(Button):
@@ -33,12 +34,12 @@ def onswitch_callback(Button):
 	# only count Falling edges, discard anything else
 	if GPIO.input(Button) == 0:
 		if LightState == 1:
-			lightnames["Pete"].on = False
+			lightnames[sys.argv[1]].on = False
 		else:
-			lightnames["Pete"].on = True
-			Brightness = lightnames["Pete"].brightness
+			lightnames[sys.argv[1]].on = True
+			Brightness = lightnames[sys.argv[1]].brightness
 
-		LightState = lightnames["Pete"].on
+		LightState = lightnames[sys.argv[1]].on
 		print ("Light is %d" % LightState)
 
 	return # not needed, just for clarity
@@ -52,7 +53,7 @@ def brighter_callback(Brighter):
 			Brightness = 254
 
 		print ("Bright to %d" % Brightness)
-		lightnames["Pete"].brightness = Brightness
+		lightnames[sys.argv[1]].brightness = Brightness
 		
 	return # not needed
 
@@ -65,7 +66,7 @@ def dimmer_callback(Dimmer):
 			Brightness = 20 
 
 		print ("Dimming to %d" % Brightness)
-		lightnames["Pete"].brightness = Brightness
+		lightnames[sys.argv[1]].brightness = Brightness
 
 	return # not needed
 
