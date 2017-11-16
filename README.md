@@ -11,5 +11,7 @@ This is a bit of python to make it possible to control a white Hue bulb on/off a
 TBD
 
 ## Installing Pi Hue
+```bash
 sudo apt-get install python3 python3-pip git
 sudo pip3 install phue
+```
