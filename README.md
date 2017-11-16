@@ -14,4 +14,5 @@ TBD
 ```bash
 sudo apt-get install python3 python3-pip git
 sudo pip3 install phue
+sudo pip3 install RPi.GPIO
 ```
