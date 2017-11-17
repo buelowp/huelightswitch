@@ -19,8 +19,8 @@ b.connect()
 b.get_api()
 lightnames = b.get_light_objects('name')
 
-Brighter = 23 # GPIO-25, pin 16
-Dimmer = 24 # GPIO-24, pin 12
+Brighter = 24 # GPIO-25, pin 16
+Dimmer = 23 # GPIO-24, pin 12
 Button = 16 # GPIO-16, pin 36
 GPIO.setup(Button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(Dimmer, GPIO.IN, pull_up_down=GPIO.PUD_UP)
