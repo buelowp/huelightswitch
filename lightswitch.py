@@ -1,113 +1,110 @@
 #!/usr/bin/env python3
 
-# code from ats1080
-# Topic: Push Button Input - Falling Edge Detection
-#
-# file : button_test4.py
-
+import signal
 import time
+import threading
+import queue
 import sys
-import logging
-logging.basicConfig()
-
-import RPi.GPIO as GPIO
-GPIO.setmode(GPIO.BCM)
+import touchphat
 from phue import Bridge
 
-b = Bridge('172.24.1.112')
-b.connect()
-b.get_api()
-lightnames = b.get_light_objects('name')
+touchphat.auto_led = False	
+q = queue.Queue()
+bridge = Bridge('172.24.1.26')
+bridge.connect()
+bridge.get_api()
+g_bulbs = bridge.get_light_objects('name')
+g_state = g_bulbs[sys.argv[1]].on
+g_brightness = g_bulbs[sys.argv[1]].brightness
+print ("LightState is %d" % g_state)
+print ("Lightbright is %d" % g_brightness)
 
-Brighter = 24 # GPIO-25, pin 16
-Dimmer = 23 # GPIO-24, pin 12
-Button = 16 # GPIO-16, pin 36
-GPIO.setup(Button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-GPIO.setup(Dimmer, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-GPIO.setup(Brighter, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+def setbrightness(bright):
+	if bright < 50:
+		touchphat.led_on("A")
+	elif bright < 125:
+		touchphat.led_on("B")
+	elif bright < 200:
+		touchphat.led_on("C")
+	else:
+		touchphat.led_on("D")
 
-LightState = lightnames[sys.argv[1]].on
-Brightness = lightnames[sys.argv[1]].brightness
-lastEvent = int(round(time.time() * 1000))
+def doEvent(pad):
+	global g_bulbs,g_state,g_brightness
+	g_state = g_bulbs[sys.argv[1]].on
+	print ("Light state is %d" % g_state)
+	if pad == "Enter":
+		touchphat.led_on(pad)
+		g_state = True 
+		g_bulbs[sys.argv[1]].on = g_state
+		g_bulbs[sys.argv[1]].brightness = g_brightness
+		setbrightness(g_brightness)
+	elif pad == "Back":
+		touchphat.all_off()
+		g_state = False
+		g_bulbs[sys.argv[1]].on = g_state
+	else:
+		touchphat.led_off("A")
+		touchphat.led_off("B")
+		touchphat.led_off("C")
+		touchphat.led_off("D")
+		if pad == "A":
+			g_brightness = 20
+		elif pad == "B":
+			g_brightness = 100
+		elif pad == "C":
+			g_brightness = 175
+		elif pad == "D":
+			g_brightness = 254
+		touchphat.led_on(pad)
+		if g_state == False:
+			g_bulbs[sys.argv[1]].on = True 
+		g_bulbs[sys.argv[1]].brightness = g_brightness
 
-def millis():
-	m = int(round(time.time() * 1000))
-	return m
+@touchphat.on_touch(['Back','A','B','C','D','Enter'])
+def handle_touch(event):
+	q.put(event.name)
 
-def onswitch_callback(Button):
-	global LightState
-	global lastEvent
-	# only count Falling edges, discard anything else
-	if GPIO.input(Button) == 0:
-		if millis() < (lastEvent + 200):
-			return
-		else:
-			lastEvent = millis()
- 
-		if LightState == 1:
-			lightnames[sys.argv[1]].on = False
-		else:
-			lightnames[sys.argv[1]].on = True
-			Brightness = lightnames[sys.argv[1]].brightness
+def setstate(state):
+	global g_state
 
-		LightState = lightnames[sys.argv[1]].on
-		print ("Light is %d" % LightState)
+	if state == True:
+		touchphat.led_on("Enter")
+	else:
+		touchphat.all_off()
+	g_state = state
 
-	return # not needed, just for clarity
+def checkit():
+	global g_brightness,g_bulbs,g_state
 
-def brighter_callback(Brighter):
-	global Brightness
-	global lastEvent
-	if GPIO.input(Brighter) == 0:
-		if millis() < (lastEvent + 200):
-			return
-		else:
-			lastEvent = millis()
+	state = g_bulbs[sys.argv[1]].on
+	bright = g_bulbs[sys.argv[1]].brightness
+	if state != g_state:
+		print ("State change from %d to %d" % (g_state, state))
+		setstate(state)
 
-		if Brightness < 234:
-			Brightness += 20
+	if bright != g_brightness:
+		print ("Brightness change from %d to %d" % (g_brightness, bright))
+		g_brightness = bright
+		setbrightness(bright)
 
-		print ("Brightning to %d" % Brightness)
-		lightnames[sys.argv[1]].brightness = Brightness
-		
-	return # not needed
+	while not q.empty():
+		t = q.get()
+		doEvent(t)
 
-def dimmer_callback(Dimmer):
-	global Brightness
-	global lastEvent
-	if GPIO.input(Dimmer) == 0:
-		if millis() < (lastEvent + 200):
-			return
-		else:
-			lastEvent = millis()
-
-		if Brightness > 20:
-			Brightness -= 20
-
-		print ("Dimming to %d" % Brightness)
-		lightnames[sys.argv[1]].brightness = Brightness
-
-	return # not needed
-
-GPIO.add_event_detect(Button, GPIO.FALLING, callback=onswitch_callback)
-GPIO.add_event_detect(Brighter, GPIO.FALLING, callback=brighter_callback)
-GPIO.add_event_detect(Dimmer, GPIO.FALLING, callback=dimmer_callback)
+	t = threading.Timer(1.0, checkit)
+	t.start()
 
 try:
-	print ("Light is %d" % LightState)
-	print ("Brightness is %d" % Brightness)
-	while True:
-		pass
+	setstate(g_state)
+	if g_state == True:
+		setbrightness(g_brightness)
 
+	checkit()
+	signal.pause()
 except KeyboardInterrupt:
-	pass
-finally:
-	print ("\nRelease our used channel(s)")
-	GPIO.cleanup([Button])
-
-def main():
-	print('Exiting')
-
-if __name__ == '__main__':
-    main()
-
+	touchphat.all_off()
+	sys.exit(0)
+except:
+	print("Unknown Error")
+	sys.exit(0)
