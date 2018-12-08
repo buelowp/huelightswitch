@@ -31,17 +31,29 @@ def setbrightness(bright):
 
 def doEvent(pad):
 	global g_bulbs,g_state,g_brightness
-	g_state = g_bulbs[sys.argv[1]].on
+	try:
+		g_state = g_bulbs[sys.argv[1]].on
+	except:
+		print ("Exception checking state, state not changed...")
+
 	print ("Light state is %d" % g_state)
 	if pad == "Enter":
 		g_state = True 
-		g_bulbs[sys.argv[1]].on = g_state
-		g_bulbs[sys.argv[1]].brightness = g_brightness
+		try:
+			g_bulbs[sys.argv[1]].on = g_state
+			g_bulbs[sys.argv[1]].brightness = g_brightness
+		except:
+			print ("Exception attempting to set values")
+
 		setbrightness(g_brightness)
+		touchphat.led_off("Enter")
 	elif pad == "Back":
 		touchphat.led_on("Enter")
 		g_state = False
-		g_bulbs[sys.argv[1]].on = g_state
+		try:
+			g_bulbs[sys.argv[1]].on = g_state
+		except:
+			print ("Exception attempting to turn lights off")
 	else:
 		touchphat.led_off("A")
 		touchphat.led_off("B")
@@ -57,8 +69,15 @@ def doEvent(pad):
 			g_brightness = 254
 		touchphat.led_on(pad)
 		if g_state == False:
-			g_bulbs[sys.argv[1]].on = True 
-		g_bulbs[sys.argv[1]].brightness = g_brightness
+			try:
+				g_bulbs[sys.argv[1]].on = True 
+			except:
+				print ("Error attempting to set lights on to a brightness")
+
+		try:
+			g_bulbs[sys.argv[1]].brightness = g_brightness
+		except:
+			print ("Exception setting brightness based on pad input")
 
 @touchphat.on_touch(['Back','A','B','C','D','Enter'])
 def handle_touch(event):
