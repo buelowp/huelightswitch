@@ -34,13 +34,12 @@ def doEvent(pad):
 	g_state = g_bulbs[sys.argv[1]].on
 	print ("Light state is %d" % g_state)
 	if pad == "Enter":
-		touchphat.led_on(pad)
 		g_state = True 
 		g_bulbs[sys.argv[1]].on = g_state
 		g_bulbs[sys.argv[1]].brightness = g_brightness
 		setbrightness(g_brightness)
 	elif pad == "Back":
-		touchphat.all_off()
+		touchphat.led_on("Enter")
 		g_state = False
 		g_bulbs[sys.argv[1]].on = g_state
 	else:
@@ -69,16 +68,22 @@ def setstate(state):
 	global g_state
 
 	if state == True:
-		touchphat.led_on("Enter")
+		touchphat.led_on("Back")
 	else:
 		touchphat.all_off()
+		touchphat.led_on("Enter")
 	g_state = state
 
 def checkit():
 	global g_brightness,g_bulbs,g_state
 
-	state = g_bulbs[sys.argv[1]].on
-	bright = g_bulbs[sys.argv[1]].brightness
+	try: 
+		state = g_bulbs[sys.argv[1]].on
+		bright = g_bulbs[sys.argv[1]].brightness
+	except:
+		state = g_state
+		bright = g_brightness
+
 	if state != g_state:
 		print ("State change from %d to %d" % (g_state, state))
 		setstate(state)
