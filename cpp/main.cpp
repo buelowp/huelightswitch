@@ -7,8 +7,8 @@ int main(int argc, char** argv)
     QApplication app(argc, argv);
     MainWindow mw;
     
-    mw.setGeometry(100,100,480,640);
-    mw.show();
+//    mw.setGeometry(100,100,640,480);
+    mw.showFullScreen();
     
     return app.exec();
 }

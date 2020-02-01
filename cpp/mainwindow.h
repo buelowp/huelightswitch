@@ -30,6 +30,8 @@
 #include <QtWidgets/QtWidgets>
 #include <QtGui/QtGui>
 
+#include "huemanager.h"
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -46,6 +48,8 @@ private slots:
     void updateTurnOnCount();
     void updateTurnOffCount();
     void allLightsUpdated();
+    void lightOneTouched();
+    void lightTwoTouched();
     
 protected:
     void showEvent(QShowEvent*);
