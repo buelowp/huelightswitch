@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
 
 import signal
-import time
 import threading
 import queue
 import sys
-import touchphat
 import os
 from phue import Bridge
+import RPi.GPIO as GPIO
 
-touchphat.auto_led = False	
+
 q = queue.Queue()
 bridge = Bridge('172.24.1.26')
 bridge.connect()
@@ -19,18 +18,6 @@ g_bulb1 = g_bulbs[sys.argv[1]]
 g_bulb2 = g_bulbs[sys.argv[2]]
 g_brightness = 255
 
-def setbrightness(bright):
-	if g_state1 or g_state2:
-		if bright < 50:
-			touchphat.led_on("A")
-		elif bright < 125:
-			touchphat.led_on("B")
-		elif bright < 200:
-			touchphat.led_on("C")
-		else:
-			touchphat.led_on("D")
-	else:
-		touchphat.all_off()
 
 def doEvent(pad):
 	global g_bulb1,g_state1,g_brightness,g_bulb1,g_state1
@@ -50,7 +37,7 @@ def doEvent(pad):
 			except:
 				print ("Exception turning primary light off")
 			g_state1 = False
-			touchphat.led_off("Enter")
+
 		elif g_state1 == False:
 			print ("Turning %s on" % g_bulb1)
 			try:
@@ -59,7 +46,7 @@ def doEvent(pad):
 			except:
 				print ("Exception attempting to turn on %s" % g_bulb1)
 			g_state1 = True
-			touchphat.led_on("Enter")
+
 	elif pad == "Back":
 		if g_state2 == True:
 			print ("Turning %s off" % g_bulb2)
@@ -68,7 +55,6 @@ def doEvent(pad):
 			except:
 				print ("Exception turning secondary light off")
 			g_state2 = False
-			touchphat.led_off("Back")
 		elif g_state2 == False:
 			print ("Turning %s on" % g_bulb2)
 			try:
@@ -77,12 +63,7 @@ def doEvent(pad):
 			except:
 				print ("Exception attempting to turn on %s" % g_bulb2)
 			g_state2 = True
-			touchphat.led_on("Back")
 	else:
-		touchphat.led_off("A")
-		touchphat.led_off("B")
-		touchphat.led_off("C")
-		touchphat.led_off("D")
 		if pad == "A":
 			g_brightness = 20
 		elif pad == "B":
@@ -106,25 +87,19 @@ def setstate(index, state):
 	global g_state1, g_state2
 	if state == True:
 		if index == 1:
-			touchphat.led_on("Enter")
 			g_state1 = state
 		else:
-			touchphat.led_on("Back")
 			g_state2 = state
 	else:
 		if index == 1:
-			touchphat.led_off("Enter")
 			g_state1 = state
 		else:
-			touchphat.led_off("Back")
 			g_state2 = state
-
-@touchphat.on_touch(['Back','A','B','C','D','Enter'])
-def handle_touch(event):
-	q.put(event.name)
 
 def checkit():
 	global g_brightness1,g_bulb1,g_state1,g_brightness2,g_bulb2,g_state2
+    bright = 0
+    
 	try: 
 		state1 = g_bulb1.on
 		state2 = g_bulb2.on
