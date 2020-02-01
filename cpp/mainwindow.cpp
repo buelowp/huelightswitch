@@ -43,6 +43,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     
     m_lightState1 = new QLabel();
     m_lightState2 = new QLabel();
+    styleSlider();
     
     m_labels = new QHBoxLayout();
     m_labels->addWidget(m_lightState1);
@@ -57,7 +58,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     m_layout->addWidget(m_light2);
     m_layout->addWidget(m_bright2);
     m_layout->addLayout(m_labels);
-    
+
     QWidget *widget = new QWidget();
     widget->setLayout(m_layout);
     setCentralWidget(widget);
@@ -71,7 +72,7 @@ void MainWindow::styleSlider()
 {
     QString styleSheet("\
     QSlider::groove:horizontal { \
-        border: 1px solid #bbb; \
+        border: 1px solid #fff; \
         background: white; \
         height: 10px; \
         border-radius: 4px; \
@@ -95,17 +96,12 @@ void MainWindow::styleSlider()
     } \
  \
     QSlider::handle:horizontal { \
-        background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #eee, stop:1 #ccc); \
+        background: blue; \
         border: 1px solid #777; \
-        width: 13px; \
-        margin-top: -2px; \
-        margin-bottom: -2px; \
-        border-radius: 4px; \
-    } \
- \
-    QSlider::handle:horizontal:hover { \
-        background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #fff, stop:1 #ddd); \
-        border: 1px solid #444; \
+        width: 40px; \
+        height: 40px; \
+        margin-top: -20px; \
+        margin-bottom: -20px; \
         border-radius: 4px; \
     } \
  \
