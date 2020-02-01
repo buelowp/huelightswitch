@@ -31,16 +31,22 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     
     m_light1 = new QPushButton("Light1");
     m_light1->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    m_light1->setStyleSheet("QPushButton{background-color: white; border-style: solid; border-color: black; border-width: 2px; border-radius: 10px;}"); 
     connect(m_light1, SIGNAL(released()), this, SLOT(lightOneTouched()));
     m_light2 = new QPushButton("Light2");
     m_light2->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    m_light2->setStyleSheet("QPushButton{background-color: white; border-style: solid; border-color: black; border-width: 2px; border-radius: 10px;}"); 
     connect(m_light2, SIGNAL(released()), this, SLOT(lightTwoTouched()));
 
+    m_bright1 = new QSlider();
+    m_bright2 = new QSlider();
     m_layout = new QVBoxLayout();
     m_layout->setSpacing(5);
     
     m_layout->addWidget(m_light1);
+    m_layout->addWidget(m_bright1);
     m_layout->addWidget(m_light2);
+    m_layout->addWidget(m_bright2);
     QWidget *widget = new QWidget();
     widget->setLayout(m_layout);
     setCentralWidget(widget);

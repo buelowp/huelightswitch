@@ -7,7 +7,9 @@ int main(int argc, char** argv)
     QApplication app(argc, argv);
     MainWindow mw;
     
-//    mw.setGeometry(100,100,640,480);
+    QCursor cursor(Qt::BlankCursor);
+    QApplication::setOverrideCursor(cursor);
+    QApplication::changeOverrideCursor(cursor);
     mw.showFullScreen();
     
     return app.exec();
