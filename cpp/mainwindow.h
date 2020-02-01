@@ -61,7 +61,10 @@ private:
     QPushButton *m_light2;
     QSlider *m_bright1;
     QSlider *m_bright2;
+    QLabel *m_lightState1;
+    QLabel *m_lightState2;
     QVBoxLayout *m_layout;
+    QHBoxLayout *m_labels;
 };
 
 #endif // MAINWINDOW_H
