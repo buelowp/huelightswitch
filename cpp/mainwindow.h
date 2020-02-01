@@ -55,6 +55,8 @@ protected:
     void showEvent(QShowEvent*);
     
 private:
+    void styleSlider();
+    
     QPushButton *m_light1;
     QPushButton *m_light2;
     QSlider *m_bright1;

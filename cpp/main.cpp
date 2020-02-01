@@ -10,7 +10,10 @@ int main(int argc, char** argv)
     QCursor cursor(Qt::BlankCursor);
     QApplication::setOverrideCursor(cursor);
     QApplication::changeOverrideCursor(cursor);
-    mw.showFullScreen();
+
+    mw.setGeometry(100,100,640,480);
+    mw.show();
+//    mw.showFullScreen();
     
     return app.exec();
 }
