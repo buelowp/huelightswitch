@@ -12,7 +12,6 @@ TBD
 
 ## Installing Pi Hue
 ```bash
-sudo apt-get install python3 python3-pip git
-sudo pip3 install phue
-sudo pip3 install RPi.GPIO
+sudo apt-get install python3 python3-pip git python3-touchphat python3-rpi.gpio
+sudo pip3 install phue --break-system-packages
 ```
