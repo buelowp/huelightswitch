@@ -1,0 +1,11 @@
+[Unit]
+Description=Hue Light Switch
+After=network.target
+
+[Service]
+Type=simple
+User=pi
+ExecStart=/usr/bin/python3 /home/pi/huelightswitch/lightswitch.py Pete Dawn
+
+[Install]
+WantedBy=multi-user.target

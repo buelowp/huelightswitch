@@ -7,17 +7,27 @@ import queue
 import sys
 import touchphat
 import os
+import socket
 from phue import Bridge
 
 touchphat.auto_led = False	
 q = queue.Queue()
-bridge = Bridge('172.24.1.26')
+bridge = Bridge('172.24.1.82')
 bridge.connect()
 bridge.get_api()
 g_bulbs = bridge.get_light_objects('name')
 g_bulb1 = g_bulbs[sys.argv[1]]
 g_bulb2 = g_bulbs[sys.argv[2]]
 g_brightness = 255
+
+def is_connected():
+	try:
+		socket.create_connection(("172.24.1.1", 80))
+		print("connected...")
+		return True
+	except OSError:
+		print("disconnected...")
+		return False
 
 def setbrightness(bright):
 	if g_state1 or g_state2:
@@ -175,6 +185,9 @@ def main():
 
 if __name__ == '__main__':
 	try:
+		while not is_connected():
+			time.sleep(1)
+
 		main()
 	except KeyboardInterrupt:
 		touchphat.all_off()
